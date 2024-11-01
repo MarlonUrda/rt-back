@@ -3,19 +3,12 @@ import { jwtUser } from "../types/api/jwtPayload";
 import jwt from "jsonwebtoken";
 
 export const hashPassword = (password: string) => {
-  const salt = process.env.SALT
-  if (!salt) {
-    throw new Error("No salt provided");
-  }
+  const salt = bcrypt.genSaltSync(10);
   return bcrypt.hash(password, salt);
 };
 
 export const comparePassword = async (password: string, hash: string) => {
-  const salt = process.env.SALT
-  if (!salt) {
-    throw new Error("No salt provided");
-  }
-  return (await bcrypt.hash(password, hash)) === hash;
+  return bcrypt.compare(password, hash);
 }
 
 export const generateToken = (user: jwtUser) => {
@@ -26,3 +19,4 @@ export const generateToken = (user: jwtUser) => {
   return jwt.sign({ user }, secret, { expiresIn: "24h" });
 };
 
+console.log("salt", bcrypt.genSaltSync(10));
