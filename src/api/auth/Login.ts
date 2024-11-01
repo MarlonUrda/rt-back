@@ -52,11 +52,11 @@ export async function checkEmail(req: Request, res: Response) {
   const existingUser = await User.findByEmail(data.email);
 
   if (existingUser) {
-    res.status(409).json({error: "Usuario ya existe"});
+    res.status(200).json({available: false});
     return
   }
 
-  res.status(200).json({message: "Email disponible"});
+  res.status(200).json({available: true}); 
 }
 
 

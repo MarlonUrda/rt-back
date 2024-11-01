@@ -9,6 +9,7 @@ class AuthGroup implements RouterGroup {
   getRouter(): e.Router {
     this.router.post("/login", login);
     this.router.post("/register", register);
+    this.router.post("/check-email", checkEmail);
     return this.router;
   }
 }
