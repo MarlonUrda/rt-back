@@ -15,6 +15,11 @@ export class Server {
 
   public start() {
     this.app.use(e.json());
+    // logger
+    this.app.use((req, res, next) => {
+      console.log(`${req.method} ${req.path}`);
+      next();
+    });
     const authGroup = new AuthGroup();
     this.app.use(authGroup.path, authGroup.getRouter());
 
