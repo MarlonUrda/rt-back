@@ -1,5 +1,6 @@
 import e from "express";
 import AuthGroup from "./auth/Group";
+import SMoviesGroup from "./movies/Group";
 
 export class Server {
   private app: e.Application;
@@ -23,16 +24,19 @@ export class Server {
     const authGroup = new AuthGroup();
     this.app.use(authGroup.path, authGroup.getRouter());
 
-    // test route
-    this.app.get("/test", (req, res) => {
+    const moviesGroup = new SMoviesGroup();
+    this.app.use(moviesGroup.path, moviesGroup.getRouter());
+
+    this.app.get("/", (_, res) => {
       res.send("Hello World");
     });
 
-
-
     this.app.listen(this.port, this.address ?? Server.DEFAULT_ADDRESS, () => {
-      console.log(`Server listening on ${this.address || Server.DEFAULT_ADDRESS}:${this.port}`);
+      console.log(
+        `Server listening on ${this.address || Server.DEFAULT_ADDRESS}:${
+          this.port
+        }`
+      );
     });
   }
 }
-

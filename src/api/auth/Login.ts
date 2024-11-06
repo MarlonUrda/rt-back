@@ -1,12 +1,11 @@
-import {Request, Response, NextFunction} from "express";
+import {Request, Response} from "express";
 import User from "../../database/models/user";
 import { loginRequestSchema, LoginResponse } from "../../types/api/login";
 import { registerSchema, checkEmailSchema } from "../../types/api/register";
 import { hashPassword, generateToken, comparePassword } from "../../helpers/auth";
-import bcrypt from "bcrypt";
 
 
-export async function login(req: Request, res: Response, next: NextFunction) {
+export async function login(req: Request, res: Response) {
   
   const {success, data} = loginRequestSchema.safeParse(req.body);
 
