@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { standardMovieResponse } from "../../types/api/tmdb/standardMovieResponse";
-import { fetchTMDB } from "../../helpers/fetchTMDB";
+import { fetchTMDB } from "../../helpers/fetchExternal";
 import { TMDBPaths } from "../../helpers/TMDBPaths";
 
 export const popular = async (_: Request, res: Response) => {
