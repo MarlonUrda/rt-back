@@ -76,7 +76,7 @@ export const fetchRawg = async <Req, Res>(
       const result = responseSchema.parse(data);
       return [result, null];
     } catch (error) {
-      console.error(error);
+      console.error(JSON.stringify(error, null, 2));
       return [null, error as Error];
     }
   } catch (error) {

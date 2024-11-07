@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx nodemon src/main.ts"
+    "dev": "npx nodemon src/main.ts dev",
+    "start": "npx ts-node src/main.ts"
   },
   "_moduleAliases": {
     "@": "src"

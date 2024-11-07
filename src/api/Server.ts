@@ -1,6 +1,6 @@
 import e from "express";
 import AuthGroup from "./auth/Group";
-import SMoviesGroup from "./movies/Group";
+import SGamesGroup from "./games/Group";
 
 export class Server {
   private app: e.Application;
@@ -24,8 +24,8 @@ export class Server {
     const authGroup = new AuthGroup();
     this.app.use(authGroup.path, authGroup.getRouter());
 
-    const moviesGroup = new SMoviesGroup();
-    this.app.use(moviesGroup.path, moviesGroup.getRouter());
+    const gamesGroup = new SGamesGroup();
+    this.app.use(gamesGroup.path, gamesGroup.getRouter());
 
     this.app.get("/", (_, res) => {
       res.send("Hello World");

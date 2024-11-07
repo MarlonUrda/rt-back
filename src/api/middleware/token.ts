@@ -2,11 +2,21 @@
 import jwt from "jsonwebtoken";
 import e from "express";
 import JwtPayloadWithUser from "../../types/api/jwtPayload";
-
-// middleware to check if the user is authenticated
+import { isDevMode } from "../../main";
 
 export function token(req: e.Request, res: e.Response, next: e.NextFunction) {
   const token = req.header("Authorization");
+
+  if (isDevMode) {
+    res.locals.user = {
+      user: {
+        email: "tomasymarlon@tm.com",
+        role: "user",
+      }
+    } as JwtPayloadWithUser;
+    next();
+    return;
+  }
 
   if (!token) {
     res.status(401).json({ error: "No token provided" });
