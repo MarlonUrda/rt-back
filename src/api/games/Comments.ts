@@ -27,15 +27,16 @@ export const addComment = async (req: Request, res: Response) => {
 
   const newComment = new Comment({
     content: data.content,
-    createdAt: data.createdAt,
-    updatedAt: data.updatedAt,
+    rating: data.rating || 0,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
     gameId: data.gameId,
     userId: data.userId,
   })
 
   await newComment.save()
 
-  res.status(201).json({ commentId: newComment.id })
+  res.status(201).json({ _id: newComment.id })
 }
 
 export const getComment = async (_req: Request, res: Response) => {
@@ -55,6 +56,8 @@ export const getComment = async (_req: Request, res: Response) => {
       await comment.populate("userId", "firstName lastName")
     }
   }
+
+  console.log(comments)
 
   res.status(200).json(comments || [])
 }

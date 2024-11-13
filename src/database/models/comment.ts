@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 export interface IComment extends mongoose.Document {
   content: string;
+  rating: number;
   createdAt: Date;
   updatedAt: Date;
   gameId: number;
@@ -17,6 +18,7 @@ export interface CommentModel extends mongoose.Model<IComment>{
 const commentSchema = new mongoose.Schema(
   {
     content: { type: String, required: true },
+    rating: { type: Number, min: 1, max: 5, required: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now},
     gameId: { type: Number, required: true },

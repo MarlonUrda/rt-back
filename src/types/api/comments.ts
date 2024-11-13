@@ -15,8 +15,7 @@ const objectIdValidator = z.string().refine((val) => mongoose.Types.ObjectId.isV
 
 export const CreateCommentRequestSchema = z.object({
   content: z.string().min(1).max(100),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  rating: z.number().optional(),
   gameId: z.number(),
   userId: objectIdValidator,
 })
