@@ -29,7 +29,7 @@ export const addComment = async (req: Request, res: Response) => {
 
   const newComment = new Comment({
     content: data.content,
-    rating: data.rating || 0,
+    rating: data.rating,
     createdAt: Date.now(),
     updatedAt: Date.now(),
     gameId: data.gameId,
@@ -61,6 +61,24 @@ export const getComment = async (_req: Request, res: Response) => {
   }
 
   res.status(200).json(comments || [])
+}
+
+export const getCommentbyId = async (_req: Request, res: Response) => {
+  const { id } = _req.params
+
+  if (!id) {
+    res.status(400).json({ error: "No se ha encontrado un id valido" })
+    return
+  }
+
+  const comment = await Comment.findCommentbyId(id)
+
+  if (!comment) {
+    res.status(404).json({ error: "Comentario no encontrado" })
+    return
+  }
+
+  res.status(200).json(comment)
 }
 
 export const updateComment = async (req: Request, res: Response) => {
