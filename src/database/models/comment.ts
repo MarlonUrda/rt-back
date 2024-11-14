@@ -18,7 +18,7 @@ export interface CommentModel extends mongoose.Model<IComment>{
 const commentSchema = new mongoose.Schema(
   {
     content: { type: String, required: true },
-    rating: { type: Number, min: 1, max: 5, required: true },
+    rating: { type: Number, required: true },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now},
     gameId: { type: Number, required: true },
