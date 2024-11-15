@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 export interface IComment extends mongoose.Document {
   content: string;
+  rating: number;
   createdAt: Date;
   updatedAt: Date;
   gameId: number;
@@ -10,6 +11,7 @@ export interface IComment extends mongoose.Document {
 
 export interface CommentModel extends mongoose.Model<IComment>{
   findComment(gameId: number, userId: string): Promise<IComment | null>;
+  findCommentbyId(commentId: string): Promise<IComment | null>;
   toJSON(): Omit<IComment, "updatedAt">;
   findCommentsByGameId(gameId: number): Promise<IComment[] | null>;
 }
@@ -17,6 +19,7 @@ export interface CommentModel extends mongoose.Model<IComment>{
 const commentSchema = new mongoose.Schema(
   {
     content: { type: String, required: true },
+    rating: { type: Number, required: true, min: 0 },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now},
     gameId: { type: Number, required: true },
@@ -28,6 +31,7 @@ const commentSchema = new mongoose.Schema(
         return {
           _id: this._id,
           content: this.content,
+          rating: this.rating,
           createdAt: this.createdAt,
           updatedAt: this.updatedAt,
           gameId: this.gameId,
@@ -41,6 +45,9 @@ const commentSchema = new mongoose.Schema(
       },
       findCommentsByGameId(gameId: number): Promise<IComment[] | null> {
         return this.find({ gameId });
+      },
+      findCommentbyId(commentId: string): Promise<IComment | null>{
+        return this.findById(commentId)
       }
     }
   }
