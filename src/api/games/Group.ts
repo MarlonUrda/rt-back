@@ -2,7 +2,7 @@ import { getPopularGames } from "./getPopularGames";
 import e from "express";
 import type { RouterGroup } from "../../types/server/RouterGroup";
 import { token } from "../middleware/token";
-import { getGameDetails } from "./getGame";
+import { getGameDetails, getGameScreenShots } from "./getGame";
 import { addComment, getComment } from "./Comments";
 
 class SGamesGroup implements RouterGroup {
@@ -13,6 +13,7 @@ class SGamesGroup implements RouterGroup {
     this.router.use(token);
     this.router.get("/popular", getPopularGames);
     this.router.get("/:id", getGameDetails)
+    this.router.get("/:id/screenshots", getGameScreenShots)
     this.router.get("/:id/comments", getComment)
     this.router.post("/:id/comments", addComment)
     return this.router;

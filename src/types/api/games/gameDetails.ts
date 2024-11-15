@@ -1,3 +1,4 @@
+import { count } from "console";
 import { z } from "zod";
 
 export const screenShot = z.object({
@@ -53,3 +54,8 @@ export const gameDetails = z.object({
   genres: z.array(genres),
   developers: z.array(developers)
 })
+
+export const screenshots = z.object({
+  count: z.number(),
+  results: z.array(screenShot),
+});
