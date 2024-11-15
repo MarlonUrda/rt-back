@@ -4,6 +4,9 @@ import { JwtPayload } from "jsonwebtoken";
 
 export interface jwtUser {
   email: string;
+  id: string;
+  firstName: string;
+  lastName: string;
   role: "user" | "critic";
 }
 

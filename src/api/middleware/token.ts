@@ -2,21 +2,9 @@
 import jwt from "jsonwebtoken";
 import e from "express";
 import JwtPayloadWithUser from "../../types/api/jwtPayload";
-import { isDevMode } from "../../main";
 
 export function token(req: e.Request, res: e.Response, next: e.NextFunction) {
-  const token = req.header("Authorization");
-
-  if (isDevMode) {
-    res.locals.user = {
-      user: {
-        email: "tomasymarlon@tm.com",
-        role: "user",
-      }
-    } as JwtPayloadWithUser;
-    next();
-    return;
-  }
+  const token = req.header("Authorization")?.split(" ")[1];
 
   if (!token) {
     res.status(401).json({ error: "No token provided" });

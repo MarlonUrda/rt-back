@@ -3,7 +3,12 @@ import e from "express";
 import type { RouterGroup } from "../../types/server/RouterGroup";
 import { token } from "../middleware/token";
 import { getGameDetails, getGameScreenShots } from "./getGame";
-import { addComment, deleteComment, getComment, updateComment } from "./Comments";
+import {
+  createReview,
+  deleteReview,
+  getGameReviews,
+  updateReview,
+} from "./Reviews";
 
 class SGamesGroup implements RouterGroup {
   public path = "/games";
@@ -12,12 +17,12 @@ class SGamesGroup implements RouterGroup {
   getRouter(): e.Router {
     this.router.use(token);
     this.router.get("/popular", getPopularGames);
-    this.router.get("/:id", getGameDetails)
-    this.router.get("/:id/screenshots", getGameScreenShots)
-    this.router.get("/:id/comments", getComment)
-    this.router.post("/:id/comments", addComment)
-    this.router.put("/:id/comments/:id", updateComment)
-    this.router.delete("/:id/comments/:id", deleteComment) 
+    this.router.get("/:id", getGameDetails);
+    this.router.get("/:id/screenshots", getGameScreenShots);
+    this.router.get("/:id/reviews", getGameReviews);
+    this.router.post("/:id/reviews", createReview);
+    this.router.put("/:id/reviews/:id", updateReview);
+    this.router.delete("/:id/reviews/:id", deleteReview);
     return this.router;
   }
 }

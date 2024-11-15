@@ -31,6 +31,9 @@ export async function login(req: Request, res: Response) {
   const token = generateToken({
     email: user.email,
     role: user.role,
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
   });
 
   const response: LoginResponse = {
@@ -85,7 +88,15 @@ export async function register(req: Request, res: Response) {
 
   await newUser.save();
 
-  const token = generateToken(newUser);
+  const jwtUser = {
+    email: newUser.email,
+    id: newUser.id,
+    role: newUser.role,
+    firstName: newUser.firstName,
+    lastName: newUser.lastName,
+  }
+
+  const token = generateToken(jwtUser);
 
   res.status(201).json({token, user: newUser.toJSON()});
 }
