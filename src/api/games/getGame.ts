@@ -6,6 +6,7 @@ import {
 import { RAWGPaths } from "../../helpers/RawgPaths";
 import { fetchRawg } from "../../helpers/fetchExternal";
 import Game from "../../database/models/game";
+import { getSearchField } from "../../helpers/getSearchPath";
 
 export const getGameDetails = async (_req: Request, res: Response) => {
   console.log("getGameDetails");
@@ -14,9 +15,13 @@ export const getGameDetails = async (_req: Request, res: Response) => {
     res.status(400).json({ error: "Debes proporcionar un id de juego" });
     return;
   }
-  const game = await Game.findByExternalId(Number(id));
+  const [searchField, castToNumber] = getSearchField(id);
 
-  console.log("`game", game);
+  const searchValue = castToNumber ? Number(id) : id;
+
+  const game = await Game.findOne({
+    [searchField]: searchValue,
+  });
 
   if (game) {
     res.status(200).json(game.toJSON());
@@ -65,3 +70,4 @@ export const getGameScreenShots = async (_req: Request, res: Response) => {
 
   res.status(200).json(response);
 };
+
