@@ -1,6 +1,7 @@
 import e from "express";
 import AuthGroup from "./auth/Group";
 import SGamesGroup from "./games/Group";
+import UserGroup from "./user/Group";
 
 export class Server {
   private app: e.Application;
@@ -23,6 +24,9 @@ export class Server {
     });
     const authGroup = new AuthGroup();
     this.app.use(authGroup.path, authGroup.getRouter());
+
+    const userGroup = new UserGroup();
+    this.app.use(userGroup.path, userGroup.getRouter());
 
     const gamesGroup = new SGamesGroup();
     this.app.use(gamesGroup.path, gamesGroup.getRouter());
