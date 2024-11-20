@@ -2,6 +2,7 @@ import e from 'express'
 import type { RouterGroup } from '../../types/server/RouterGroup'
 import { deleteUser, updateUser } from './User'
 import { token } from '../middleware/token'
+import { addGameToPlaylist, deleteGameFromPlaylist, getPlaylist } from "./Playlist";
 
 class UserGroup implements RouterGroup {
   public path = '/user'
@@ -11,6 +12,9 @@ class UserGroup implements RouterGroup {
     this.router.use(token)
     this.router.put('/:id', updateUser)
     this.router.delete('/:id', deleteUser)
+    this.router.get(":id/playlist", getPlaylist)
+    this.router.post("/playlist", addGameToPlaylist);
+    this.router.delete("/playlist/:id", deleteGameFromPlaylist);
     return this.router
   }
 }
