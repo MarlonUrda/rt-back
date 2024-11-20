@@ -40,7 +40,8 @@ const reviewSchema = new mongoose.Schema(
       firstName: { type: String, required: true },
       lastName: { type: String, required: true },
       _id: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
-    }, required: true}
+    }, required: true},
+    reviewType: { type: String, required: true },
   },
   {
     methods: {
@@ -54,6 +55,7 @@ const reviewSchema = new mongoose.Schema(
           gameId: this.gameId,
           userId: this.userId,
           user: this.user,
+          reviewType: this.reviewType,
         };
       },
     },

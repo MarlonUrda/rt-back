@@ -24,6 +24,7 @@ export const getGameDetails = async (_req: Request, res: Response) => {
   });
 
   if (game) {
+    console.log("game found in db", game.toJSON());  
     res.status(200).json(game.toJSON());
     return;
   }

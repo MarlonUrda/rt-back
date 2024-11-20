@@ -12,6 +12,7 @@ import {
   DeleteReviewRequestSchema,
 } from "../../types/api/reviews";
 import JwtPayloadWithUser from "../../types/api/jwtPayload";
+import Game from "../../database/models/game";
 
 export const createReview = async (req: Request, res: Response) => {
   const { success, data, error } = CreateReviewRequestSchema.safeParse(
@@ -44,12 +45,44 @@ export const createReview = async (req: Request, res: Response) => {
       lastName: user.user.lastName,
       _id: user.user.id,
     },
+    reviewType: user.user.role,
   });
 
   await newReview.save();
-
   res.status(201).json({ _id: newReview.id });
-};
+
+
+  const game = await Game.findById(data.gameId);
+
+  if (!game) {
+    return;
+  }
+
+  const userRating = game.mt_rating_user || 0;
+  const criticRating = game.mt_rating_critic || 0;
+  const userRatingCount = game.mt_rating_user_count || 0;
+  const criticRatingCount = game.mt_rating_critic_count || 0;
+
+  if (user.user.role === "user") {
+    const newRating = (userRating * userRatingCount + data.rating) / (userRatingCount + 1);
+
+    await game.updateOne({
+      mt_rating_user: newRating,
+      mt_rating_user_count: userRatingCount + 1,
+    })
+    return;
+  }
+
+  const newRating = (criticRating * criticRatingCount + data.rating) / (criticRatingCount + 1);
+
+  await game.updateOne({
+    mt_rating_critic: newRating,
+    mt_rating_critic_count: criticRatingCount + 1,
+  });
+
+
+}
+
 
 export const getGameReviews = async (_req: Request, res: Response) => {
   const { id } = _req.params;
@@ -89,6 +122,8 @@ export const updateReview = async (req: Request, res: Response) => {
     req.body
   );
 
+  const user = res.locals.user as JwtPayloadWithUser;
+
   if (!success || !data) {
     res.status(400).json({ error: error.message ?? "Peticion invalida" });
     return;
@@ -115,15 +150,47 @@ export const updateReview = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({ _id: update.id });
+
+    const game = await Game.findById(update.gameId);
+
+    if (!game) {
+      return;
+    }
+
+    const userRating = game.mt_rating_user || 0;
+    const criticRating = game.mt_rating_critic || 0;
+    const userRatingCount = game.mt_rating_user_count || 0;
+    const criticRatingCount = game.mt_rating_critic_count || 0;
+
+    if (user.user.role === "user") {
+      const newRating = (userRating * userRatingCount - update.rating + data.rating) / userRatingCount;
+
+      await game.updateOne({
+        mt_rating_user: newRating,
+        mt_rating_user_count: userRatingCount + 1,
+      })
+      return;
+    }
+
+    const newRating = (criticRating * criticRatingCount - update.rating + data.rating) / criticRatingCount;
+
+    await game.updateOne({
+      mt_rating_critic: newRating,
+      mt_rating_critic_count: criticRatingCount + 1,
+    });
+
+
   } catch (error) {
     res.status(500).json({ error: "Error al actualizar el comentario." });
   }
 };
 
 export const deleteReview = async (req: Request, res: Response) => {
-  const { success, data, error } = DeleteReviewRequestSchema.safeParse(
-    req.body
-  );
+  const { id } = req.params;
+
+  const { success, data, error } = DeleteReviewRequestSchema.safeParse({
+    _id: id,
+  });
 
   if (!success || !data) {
     res.status(400).json({ error: error.message ?? "Peticion invalida" });

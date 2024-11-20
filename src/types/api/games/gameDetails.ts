@@ -24,6 +24,10 @@ export const gameDetails = z.object({
   platforms: z.array(platformDetails),
   parent_platforms: z.array(parentPlatform),
   genres: z.array(genres),
+  mt_rating_user: z.number().optional(),
+  mt_rating_user_count: z.number().optional(),
+  mt_rating_critic: z.number().optional(),
+  mt_rating_critic_count: z.number().optional(),
   added: z.number(),
   developers: z.array(developers),
 });
