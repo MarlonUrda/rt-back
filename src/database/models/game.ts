@@ -27,6 +27,10 @@ export interface IGame extends mongoose.Document {
   reviews_count: number;
   added: number;
   developers: Array<z.infer<typeof developers>>;
+  mt_rating_user?: number;
+  mt_rating_user_count?: number;
+  mt_rating_critic?: number;
+  mt_rating_critic_count?: number;
 }
 
 export interface GameModel extends mongoose.Model<IGame> {
@@ -100,6 +104,10 @@ const gameSchema = new mongoose.Schema(
       ],
       required: true,
     },
+    mt_rating_user: { type: Number, required: false },
+    mt_rating_user_count: { type: Number, required: false },
+    mt_rating_critic: { type: Number, required: false },
+    mt_rating_critic_count: { type: Number, required: false}
   },
   {
     methods: {
@@ -124,6 +132,10 @@ const gameSchema = new mongoose.Schema(
           reviews_count: this.reviews_count,
           added: this.added,
           developers: this.developers,
+          mt_rating_user: this.mt_rating_user,
+          mt_rating_user_count: this.mt_rating_user_count,
+          mt_rating_critic: this.mt_rating_critic,
+          mt_rating_critic_count: this.mt_rating_critic_count,
         };
       },
     },

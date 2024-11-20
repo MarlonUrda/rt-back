@@ -34,8 +34,8 @@ export type UpdateReviewRequest = {
 
 export const UpdateReviewRequestSchema = z.object({
   _id: z.string(),
-  content: z.string().min(1).max(100).optional(),
-  rating: z.number().optional(),
+  content: z.string().min(1).max(500),
+  rating: z.number(),
 });
 
 export const UpdateReviewResponseSchema = z.object({

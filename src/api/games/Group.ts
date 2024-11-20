@@ -21,8 +21,8 @@ class SGamesGroup implements RouterGroup {
     this.router.get("/:id/screenshots", getGameScreenShots);
     this.router.get("/:id/reviews", getGameReviews);
     this.router.post("/:id/reviews", createReview);
-    this.router.put("/:id/reviews/:id", updateReview);
-    this.router.delete("/:id/reviews/:id", deleteReview);
+    this.router.put("/:gameId/reviews/:id", updateReview);
+    this.router.delete("/:gameId/reviews/:id", deleteReview);
     return this.router;
   }
 }
