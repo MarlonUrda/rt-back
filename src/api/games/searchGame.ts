@@ -1,4 +1,7 @@
-import { standardGameResponse, standardRawgGameResponse } from "../../types/api/games/standardGameResponse";
+import {
+  standardGameResponse,
+  standardRawgGameResponse,
+} from "../../types/api/games/standardGameResponse";
 import z from "zod";
 import Game from "../../database/models/game";
 import {
@@ -9,13 +12,19 @@ import { Request, Response } from "express";
 import { platform } from "os";
 import { parseNumber } from "../../helpers/typeParsers";
 import { fetchRawg } from "../../helpers/fetchExternal";
-import { convertRawgGameToGamePreview, removeRawgDuplicates } from "../../helpers/previewConverter";
+import {
+  convertRawgGameToGamePreview,
+  removeRawgDuplicates,
+} from "../../helpers/previewConverter";
 
 const searchGameSchema = z.object({
   query: z.string().max(100).optional(),
-  page: z.number().int().positive().default(1),
+  page: z.number({ coerce: true }).int().positive().default(1),
+  external_page: z.number({ coerce: true }).int().optional().default(1),
   platforms: z.string().optional(),
 });
+
+const PAGE_SIZE = 20;
 
 export const searchGames = async (req: Request, res: Response) => {
   const { success, data, error } = searchGameSchema.safeParse(req.query);
@@ -43,19 +52,30 @@ export const searchGames = async (req: Request, res: Response) => {
     query["$text"] = { $search: data.query };
   }
 
-  const games = (await Game.find(query)
+  const localGames = (await Game.find(query)
     .sort({ added: -1 })
-    .skip((data.page - 1) * 20)
-    .limit(20)
+    .skip((data.page - 1) * PAGE_SIZE)
+    .limit(PAGE_SIZE)
     .select(gamePreviewProjection)) as z.infer<typeof gamePreview>[];
 
+  let response: z.infer<typeof standardGameResponse> = {
+    count: 0,
+    results: [],
+  };
 
-
-  // also fetch from RAWG
+  if (localGames.length >= PAGE_SIZE) {
+    response = {
+      count: localGames.length,
+      results: localGames,
+      next_page: data.page + 1,
+    };
+    res.status(200).json(response);
+    return;
+  }
 
   const rawgQuery: Record<string, string> = {
-    page: data.page.toString(),
-  }
+    page: data.external_page.toString(),
+  };
 
   if (data.query) {
     rawgQuery["search"] = data.query;
@@ -77,17 +97,17 @@ export const searchGames = async (req: Request, res: Response) => {
     return;
   }
 
-  const convertedGames = rawgGames?.results.map(convertRawgGameToGamePreview) ?? [];
+  const convertedGames =
+    rawgGames?.results.map(convertRawgGameToGamePreview) ?? [];
 
-  const fullGames = removeRawgDuplicates([...games, ...convertedGames]);
+  const fullGames = removeRawgDuplicates([...localGames, ...convertedGames]);
 
-    const response: z.infer<typeof standardGameResponse> = {
-      count: fullGames.length,
-      results: fullGames,
-    };
+  response = {
+    count: fullGames.length,
+    results: fullGames,
+    next_external_page: data.external_page + 1,
+  };
 
-
-  
   res.status(200).json(response);
 };
 
