@@ -4,17 +4,20 @@ import JwtPayloadWithUser from "../../types/api/jwtPayload";
 import Playlist from "../../database/models/playlist";
 
 export const getPlaylist = async (_req: Request, res: Response) => {
+  console.log("GET PLAY")
   const { id } = _req.params;
   console.log(id)
 
   try {
-    const playlist = await Playlist.findById(id)
+    const playlist = await Playlist.findPlaylistByUserId(id)
     if (!playlist) {
       res.status(404).json({ error: "No se ha encontrado la playlist del usuario" });
       return;
     }
 
-    res.status(200).json(playlist || []);
+    console.log(playlist.toJSON())
+    
+    res.status(200).json(playlist);
 
   } catch (error) {
     console.log(error);
@@ -65,31 +68,25 @@ export const addGameToPlaylist = async (req: Request, res: Response) => {
   }
 }
 
-export const deleteGameFromPlaylist = async (req: Request, res: Response) => {
-  const { success, data, error } = deleteFromPlaylistRequestSchema.safeParse(req.body);
+export const deleteGameFromPlaylist = async (_req: Request, res: Response) => {
+  const { userId, id } = _req.params;
 
-  const user = res.locals.user as JwtPayloadWithUser;
-  if (!success ||!data) {
-    res.status(400).json({ error: error.message?? "Peticion invalida" });
-    return;
-  }
-
-  if (!data.gameId) {
-    res.status(400).json({ error: "No se ha encontrado un id de juego valido" });
+  if (!userId ||!id) {
+    res.status(400).json({ error: "No se ha encontrado un id de usuario o juego valido" });
     return;
   }
 
   try {
-    const deletedGame = await Playlist.removeGame(user.user.id, data.gameId);
+    const deleted = await Playlist.removeGame(userId, id)
 
-    if (!deletedGame) {
-      res.status(404).json({ error: "El juego no se encuentra en la playlist" });
+    if (!deleted) {
+      res.status(404).json({ error: "No se ha encontrado el juego en la lista de reproduccion" });
       return;
     }
 
-    res.status(200).json({ _id: deletedGame.id });
+    res.status(200).json({ _id: deleted.id });
   } catch (error) {
     console.log(error)
-    res.status(500).json({ error: "Error al eliminar el juego de la playlist" });
+    res.status(500).json({ error: "Error interno del servidor" })
   }
 }

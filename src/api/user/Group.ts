@@ -12,9 +12,9 @@ class UserGroup implements RouterGroup {
     this.router.use(token)
     this.router.put('/:id', updateUser)
     this.router.delete('/:id', deleteUser)
-    this.router.get(":id/playlist", getPlaylist)
+    this.router.get("/:id/playlist", getPlaylist)
     this.router.post("/playlist", addGameToPlaylist);
-    this.router.delete("/playlist/:id", deleteGameFromPlaylist);
+    this.router.delete("/:userId/playlist/:id", deleteGameFromPlaylist);
     return this.router
   }
 }

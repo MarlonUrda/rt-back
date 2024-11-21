@@ -30,14 +30,14 @@ const playlistSchema = new mongoose.Schema({
     toJSON(){
       return {
         _id: this._id,
-        gameId: this.gameIds,
+        gameIds: this.gameIds,
         userId: this.userId,
         user: this.user
       }
     }
   }, statics: {
     findPlaylistByUserId(userId: string): Promise<IPlaylist | null> {
-      return this.findOne({ userId });
+      return this.findOne({ userId }).populate("gameIds");
     },
     async addGame(userId: string, gameId: string): Promise<IPlaylist | null> {
       const playlist = await this.findOne({ userId });
@@ -49,7 +49,8 @@ const playlistSchema = new mongoose.Schema({
         playlist.gameIds.push(myGame);
         await playlist.save();
       }
-      return playlist.populate('gameIds');
+      await playlist.populate('gameIds');
+      return playlist
     },
     async removeGame(userId: string, gameId: string): Promise<IPlaylist | null> {
       const playlist = await this.findOne({ userId: new mongoose.Types.ObjectId(userId) });
