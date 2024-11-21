@@ -46,15 +46,23 @@ export const fetchTMDB = async <Req, Res>(
 export const fetchRawg = async <Req, Res>(
   options: {
     path: string;
+    params?: Record<string, string>;
     method: string;
     responseSchema: z.ZodType<Res>;
     body?: Req;
   }
 ): Promise<[Res | null, Error | null]> => {
   const { path, method, responseSchema, body } = options;
+  
+  
+  
   const apiKey = process.env.RAWG_API_KEY;
-  const keyParam = path.includes("?") ? "&" : "?";
-  const url = `https://api.rawg.io/api/${path}${keyParam}key=${apiKey}`;
+  const params = options.params ? new URLSearchParams(options.params) : new URLSearchParams();
+  params.append("key", apiKey ?? "");
+  
+  const url = `https://api.rawg.io/api/${path}?${params.toString()}`;
+
+  console.log(url, "fetching rawg");
 
   try {
     const response = await fetch(url, {

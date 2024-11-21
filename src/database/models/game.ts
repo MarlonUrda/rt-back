@@ -56,7 +56,7 @@ const gameSchema = new mongoose.Schema(
         slug: { type: String, required: true },
         name: { type: String, required: true },
       },
-      required: true,
+      required: false,
     },
     platforms: {
       type: [
@@ -66,7 +66,7 @@ const gameSchema = new mongoose.Schema(
             slug: { type: String, required: true },
             name: { type: String, required: true },
           },
-          released_at: { type: String, required: true },
+          released_at: { type: String, required: false },
         },
       ],
       required: true,
@@ -146,6 +146,9 @@ const gameSchema = new mongoose.Schema(
     },
   }
 );
+
+// add text index to name field
+gameSchema.index({ name: "text" });
 
 const Game = mongoose.model<IGame, GameModel>("Game", gameSchema);
 
