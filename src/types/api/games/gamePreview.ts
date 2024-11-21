@@ -10,8 +10,8 @@ export const gamePreview = z.object({
   released: z.string(),
   tba: z.boolean(),
   background_image: z.string(),
-  metacritic: z.number(),
-  playtime: z.number(),
+  metacritic: z.number().nullable(),
+  playtime: z.number().nullable(),
   esrb_rating: esrbRating,
   platforms: z.array(platformDetails),
   parent_platforms: z.array(parentPlatform),
@@ -19,6 +19,21 @@ export const gamePreview = z.object({
   mt_rating_user_count: z.number().optional(),
   mt_rating_critic: z.number().optional(),
   mt_rating_critic_count: z.number().optional(),
+});
+
+export const rawgGamePreview = z.object({
+  id: z.number(),
+  slug: z.string(),
+  name: z.string(),
+  released: z.string(),
+  tba: z.boolean(),
+  background_image: z.string(),
+  metacritic: z.number().nullable(),
+  playtime: z.number().nullable(),
+  esrb_rating: esrbRating,
+  platforms: z.array(platformDetails),
+  parent_platforms: z.array(parentPlatform),
+  
 });
 
 export const gamePreviewProjection = {

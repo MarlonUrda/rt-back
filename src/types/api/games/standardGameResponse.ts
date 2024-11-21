@@ -1,5 +1,5 @@
 import z from "zod";
-import { gamePreview } from "./gamePreview";
+import { gamePreview, rawgGamePreview } from "./gamePreview";
 
 export const standardGameResponse = z.object({
   count: z.number(),
@@ -7,3 +7,8 @@ export const standardGameResponse = z.object({
   // previous: z.string().nullable(),
   results: z.array(gamePreview),
 });
+
+export const standardRawgGameResponse = z.object({
+  count: z.number(),
+  results: z.array(rawgGamePreview),
+})
