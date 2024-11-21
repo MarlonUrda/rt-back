@@ -163,20 +163,22 @@ export const updateReview = async (req: Request, res: Response) => {
     const criticRatingCount = game.mt_rating_critic_count || 0;
 
     if (user.user.role === "user") {
-      const newRating = (userRating * userRatingCount - update.rating + data.rating) / userRatingCount;
+      const newRating =
+        (userRating * userRatingCount - update.rating + data.rating) /
+        userRatingCount;
 
       await game.updateOne({
         mt_rating_user: newRating,
-        mt_rating_user_count: userRatingCount + 1,
-      })
+      });
       return;
     }
 
-    const newRating = (criticRating * criticRatingCount - update.rating + data.rating) / criticRatingCount;
+    const newRating =
+      (criticRating * criticRatingCount - update.rating + data.rating) /
+      criticRatingCount;
 
     await game.updateOne({
       mt_rating_critic: newRating,
-      mt_rating_critic_count: criticRatingCount + 1,
     });
 
 
@@ -203,14 +205,49 @@ export const deleteReview = async (req: Request, res: Response) => {
   }
 
   try {
-    const deleted = await Review.findByIdAndDelete(data._id);
+    const toDelete = await Review.findById(data._id);
+    
 
-    if (!deleted) {
+    if (!toDelete) {
       res.status(404).json({ error: "Comentario no encontrado" });
       return;
     }
 
-    res.status(200).json({ _id: deleted.id });
+    await toDelete.deleteOne();
+
+    res.status(200).json({ _id: toDelete.id });
+
+    // Update game rating
+    const game = await Game.findById(toDelete.gameId);
+
+    if (!game) {
+      return;
+    }
+
+    const userRating = game.mt_rating_user || 0;
+    const criticRating = game.mt_rating_critic || 0;
+    const userRatingCount = game.mt_rating_user_count || 0;
+    const criticRatingCount = game.mt_rating_critic_count || 0;
+
+    if (toDelete.reviewType === "user") {
+      const newRating = (userRating * userRatingCount - toDelete.rating) / userRatingCount;
+
+      await game.updateOne({
+        mt_rating_user: newRating,
+        mt_rating_user_count: userRatingCount - 1,
+      })
+      return;
+    }
+
+    const newRating = (criticRating * criticRatingCount - toDelete.rating) / criticRatingCount;
+
+    await game.updateOne({
+      mt_rating_critic: newRating,
+      mt_rating_critic_count: criticRatingCount - 1,
+    });
+
+    
+
   } catch (error) {
     res.status(500).json({ error: "Error borrando el comentario" });
   }

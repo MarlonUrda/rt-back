@@ -12,6 +12,7 @@ export interface IReview extends mongoose.Document {
     lastName: string;
     _id: mongoose.Schema.Types.ObjectId
   }
+  reviewType: string;
 }
 
 export interface ReviewModel extends mongoose.Model<IReview> {
