@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import { addGameRequestSchema, deleteFromPlaylistRequestSchema } from "../../types/api/playlist";
 import JwtPayloadWithUser from "../../types/api/jwtPayload";
 import Playlist from "../../database/models/playlist";
+import { fetchRawg } from "../../helpers/fetchExternal";
+import { RAWGPaths } from "../../helpers/RawgPaths";
+import Game from "../../database/models/game";
+import { gameDetails } from "../../types/api/games/gameDetails";
+import { getSearchField } from "../../helpers/getSearchPath";
+import { z } from "zod";
 
 export const getPlaylist = async (_req: Request, res: Response) => {
   console.log("GET PLAY")
@@ -24,6 +30,7 @@ export const getPlaylist = async (_req: Request, res: Response) => {
 }
 
 export const addGameToPlaylist = async (req: Request, res: Response) => {
+  let newId: string;
   const { success, data, error } = addGameRequestSchema.safeParse(req.body);
 
   const user = res.locals.user as JwtPayloadWithUser;
@@ -40,9 +47,42 @@ export const addGameToPlaylist = async (req: Request, res: Response) => {
 
   try {
 
-    const game = await Playlist.findGame(user.user.id, data.gameId)
+    const [searchField, castToNumber] = getSearchField(data.gameId);
 
-    if (game) {
+    const searchValue = castToNumber ? Number(data.gameId) : data.gameId;
+
+    const game = await Game.findOne({
+      [searchField]: searchValue,
+    });
+
+    if (!game) {
+      const [response, error] = await fetchRawg({
+        path: RAWGPaths.gameDetails(Number(data.gameId)),
+        method: "GET",
+        responseSchema: gameDetails,
+      }) as [z.infer<typeof gameDetails>, Error]
+
+      if(!response){
+        console.error(error);
+        res.status(500).json({ error: "Error al buscar el juego en RAWG" });
+        return;
+      }
+
+      const newGame = new Game({
+        external_id: response.id,
+        ...response,
+        release_date: response.released ? new Date(response.released) : null,
+      });
+
+      await newGame.save();
+
+      data.gameId = newGame._id as string;
+      console.log(data.gameId)
+    }
+
+    const gameInPlaylist = await Playlist.findGame(user.user.id, data.gameId)
+
+    if (gameInPlaylist) {
       console.log("nop")
       res.status(400).json({ error: "El juego ya se encuentra en la playlist" });
       return;
