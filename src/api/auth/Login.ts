@@ -10,21 +10,21 @@ export async function login(req: Request, res: Response) {
   const {success, data} = loginRequestSchema.safeParse(req.body);
 
   if (!success || !data) {
-    res.status(400).json({error: "Peticion invalida"});
+    res.status(400).json({error: "Invalid request."});
     return
   }
 
   const user = await User.findByEmail(data.email);
 
   if (!user) {
-    res.status(403).json({error: "Usuario o contraseña incorrectos"});
+    res.status(403).json({error: "User or password incorrect."});
     return
   }
 
   const isValid = await comparePassword(data.password, user.password);
 
   if (!isValid) {
-    res.status(403).json({error: "Usuario o contraseña incorrectos"});
+    res.status(403).json({error: "User or password incorrect."});
     return
   }
 
@@ -47,7 +47,7 @@ export async function checkEmail(req: Request, res: Response) {
   const {success, data} = checkEmailSchema.safeParse(req.body);
 
   if (!success || !data) {
-    res.status(400).json({error: "Peticion invalida"});
+    res.status(400).json({error: "Invalid request."});
     return
   }
 
@@ -66,14 +66,14 @@ export async function register(req: Request, res: Response) {
   const {success, data, error} = registerSchema.safeParse(req.body);
 
   if (!success || !data) {
-    res.status(400).json({error: error?.message ?? "Peticion invalida"});
+    res.status(400).json({error: error?.message ?? "Invalid request."});
     return
   }
 
   const existingUser = await User.findByEmail(data.email);
 
   if (existingUser) {
-    res.status(409).json({error: "Usuario ya existe"});
+    res.status(409).json({error: "User already exist."});
     return
   }
 

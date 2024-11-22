@@ -22,14 +22,14 @@ export const createReview = async (req: Request, res: Response) => {
   const user = res.locals.user as JwtPayloadWithUser;
 
   if (!success || !data) {
-    res.status(400).json({ error: error.message ?? "Peticion invalida" });
+    res.status(400).json({ error: error.message ?? "Invalid request." });
     return;
   }
 
   const comment = await Review.findReview(data.gameId, user.user.id);
 
   if (comment) {
-    res.status(400).json({ error: "El usuario ya ha comentado este juego" });
+    res.status(400).json({ error: "You already reviewed this game." });
     return;
   }
 
@@ -89,7 +89,7 @@ export const getGameReviews = async (_req: Request, res: Response) => {
   console.log(id);
 
   if (!id) {
-    res.status(400).json({ error: "No se ha encontrado un id valido" });
+    res.status(400).json({ error: "Valid id not founded." });
     return;
   }
 
@@ -103,14 +103,14 @@ export const getCommentbyId = async (_req: Request, res: Response) => {
   const { id } = _req.params;
 
   if (!id) {
-    res.status(400).json({ error: "No se ha encontrado un id valido" });
+    res.status(400).json({ error: "Valid id not founded." });
     return;
   }
 
   const comment = await Review.findById(id);
 
   if (!comment) {
-    res.status(404).json({ error: "Comentario no encontrado" });
+    res.status(404).json({ error: "Review not found." });
     return;
   }
 
@@ -125,12 +125,12 @@ export const updateReview = async (req: Request, res: Response) => {
   const user = res.locals.user as JwtPayloadWithUser;
 
   if (!success || !data) {
-    res.status(400).json({ error: error.message ?? "Peticion invalida" });
+    res.status(400).json({ error: error.message ?? "Invalid request." });
     return;
   }
 
   if (!data._id) {
-    res.status(400).json({ error: "No se ha encontrado un id valido" });
+    res.status(400).json({ error: "Valid id not founded." });
     return;
   }
 
@@ -145,7 +145,7 @@ export const updateReview = async (req: Request, res: Response) => {
     });
 
     if (!update) {
-      res.status(404).json({ error: "Comentario no encontrado" });
+      res.status(404).json({ error: "Review not founded" });
       return;
     }
 
@@ -183,7 +183,7 @@ export const updateReview = async (req: Request, res: Response) => {
 
 
   } catch (error) {
-    res.status(500).json({ error: "Error al actualizar el comentario." });
+    res.status(500).json({ error: "Error updating your review." });
   }
 };
 
@@ -195,12 +195,12 @@ export const deleteReview = async (req: Request, res: Response) => {
   });
 
   if (!success || !data) {
-    res.status(400).json({ error: error.message ?? "Peticion invalida" });
+    res.status(400).json({ error: error.message ?? "Invalid request." });
     return;
   }
 
   if (!data._id) {
-    res.status(400).json({ error: "No se ha encontrado un id valido" });
+    res.status(400).json({ error: "Valid id not founded." });
     return;
   }
 
@@ -209,7 +209,7 @@ export const deleteReview = async (req: Request, res: Response) => {
     
 
     if (!toDelete) {
-      res.status(404).json({ error: "Comentario no encontrado" });
+      res.status(404).json({ error: "Review not founded" });
       return;
     }
 
@@ -249,6 +249,6 @@ export const deleteReview = async (req: Request, res: Response) => {
     
 
   } catch (error) {
-    res.status(500).json({ error: "Error borrando el comentario" });
+    res.status(500).json({ error: "Error deleting the review" });
   }
 };

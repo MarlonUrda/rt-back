@@ -15,7 +15,7 @@ export const getPlaylist = async (_req: Request, res: Response) => {
   try {
     const playlist = await Playlist.findPlaylistByUserId(id)
     if (!playlist) {
-      res.status(404).json({ error: "No se ha encontrado la playlist del usuario" });
+      res.status(404).json({ error: "User playlist not found." });
       return;
     }
     
@@ -23,7 +23,7 @@ export const getPlaylist = async (_req: Request, res: Response) => {
 
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    res.status(500).json({ error: "Internal server error." });
   }
 }
 
@@ -34,12 +34,12 @@ export const addGameToPlaylist = async (req: Request, res: Response) => {
   const user = res.locals.user as JwtPayloadWithUser;
 
   if (!success ||!data) {
-    res.status(400).json({ error: error.message?? "Peticion invalida" });
+    res.status(400).json({ error: error.message?? "Invalid Request." });
     return;
   }
 
   if (!data.gameId) {
-    res.status(400).json({ error: "No se ha encontrado un id de juego valido" });
+    res.status(400).json({ error: "Game id invalid." });
     return;
   }
 
@@ -62,7 +62,7 @@ export const addGameToPlaylist = async (req: Request, res: Response) => {
 
       if(!response){
         console.error(error);
-        res.status(500).json({ error: "Error al buscar el juego en RAWG" });
+        res.status(500).json({ error: "Error searching game." });
         return;
       }
 
@@ -86,7 +86,7 @@ export const addGameToPlaylist = async (req: Request, res: Response) => {
 
     if (gameInPlaylist) {
       console.log("nop")
-      res.status(400).json({ error: "El juego ya se encuentra en la playlist" });
+      res.status(400).json({ error: "The game its already in the playlist" });
       return;
     }
 
@@ -113,7 +113,7 @@ export const addGameToPlaylist = async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.log(error)
-    res.status(500).json({ error: "Error al agregar el juego a la lista de reproduccion" });
+    res.status(500).json({ error: "Error adding game to the playlist" });
   }
 }
 
@@ -121,7 +121,7 @@ export const deleteGameFromPlaylist = async (_req: Request, res: Response) => {
   const { userId, id } = _req.params;
 
   if (!userId ||!id) {
-    res.status(400).json({ error: "No se ha encontrado un id de usuario o juego valido" });
+    res.status(400).json({ error: "Either user id or game id are not valid." });
     return;
   }
 
@@ -129,13 +129,13 @@ export const deleteGameFromPlaylist = async (_req: Request, res: Response) => {
     const deleted = await Playlist.removeGame(userId, id)
 
     if (!deleted) {
-      res.status(404).json({ error: "No se ha encontrado el juego en la lista de reproduccion" });
+      res.status(404).json({ error: "Game not found in your playlist." });
       return;
     }
 
     res.status(200).json({ _id: deleted.id });
   } catch (error) {
     console.log(error)
-    res.status(500).json({ error: "Error interno del servidor" })
+    res.status(500).json({ error: "Internal server error." })
   }
 }

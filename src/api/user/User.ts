@@ -5,7 +5,7 @@ export const deleteUser = async (_req: Request, res: Response) => {
   const { id } = _req.params;
 
   if (!id) {
-    res.status(400).json({ error: "No se ha encontrado un id válido" });
+    res.status(400).json({ error: "Valid id not founded." });
     return;
   }
 
@@ -14,7 +14,7 @@ export const deleteUser = async (_req: Request, res: Response) => {
     const deleted = await User.findByIdAndDelete(id);
   
     if (!deleted) {
-      res.status(404).json({ error: "Usuario no encontrado" });
+      res.status(404).json({ error: "User not found." });
       return;
     }
   
@@ -22,7 +22,7 @@ export const deleteUser = async (_req: Request, res: Response) => {
 
   } catch (error) {
     console.log(error);
-    res.status(500).json({ error: "Error interno del servidor" });
+    res.status(500).json({ error: "Internal server error." });
   }
 
 
@@ -32,7 +32,7 @@ export const updateUser = async (req: Request, res: Response) => {
   const { _id, firstName, lastName } = req.body
 
   if(!_id || !firstName || !lastName) {
-    res.status(400).json({ error: "La peticion es invalida" });
+    res.status(400).json({ error: "Invalid request." });
     return;
   }
 
@@ -44,12 +44,12 @@ export const updateUser = async (req: Request, res: Response) => {
   try {
     const updated = await User.findByIdAndUpdate(_id, updateData, { new: true });
     if(!updated) {
-      res.status(404).json({ error: "Usuario no encontrado" });
+      res.status(404).json({ error: "User not found." });
       return;
     }
     res.status(200).json({ _id: updated.id, firstName: updated.firstName, lastName: updated.lastName});
   } catch(err) {
     console.log(err)
-    res.status(500).json({ error: "Error interno del servidor" })
+    res.status(500).json({ error: "Internal server error." })
   }
 }

@@ -39,7 +39,7 @@ export const getGameDetails = async (_req: Request, res: Response) => {
   ;
 
   if (!response) {
-    res.status(500).json({ error: "Error al obtener detalles del juego" });
+    res.status(500).json({ error: "Error getting game details." });
     return;
   }
 
@@ -58,7 +58,7 @@ export const getGameDetails = async (_req: Request, res: Response) => {
 export const getGameScreenShots = async (_req: Request, res: Response) => {
   const { id } = _req.params;
   if (!id) {
-    res.status(400).json({ error: "Debes proporcionar un id de juego" });
+    res.status(400).json({ error: "You must provide a game id" });
     return;
   }
   const [response, error] = await fetchRawg({
@@ -68,7 +68,7 @@ export const getGameScreenShots = async (_req: Request, res: Response) => {
   });
 
   if (!response) {
-    res.status(500).json({ error: "Error al obtener screenshots del juego" });
+    res.status(500).json({ error: "Error getting screenshots of the game." });
     return;
   }
 

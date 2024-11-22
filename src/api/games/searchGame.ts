@@ -26,7 +26,7 @@ export const searchGames = async (req: Request, res: Response) => {
   const { success, data, error } = searchGameSchema.safeParse(req.query);
 
   if (!success || !data) {
-    res.status(400).json({ error: error.message ?? "Peticion invalida" });
+    res.status(400).json({ error: error.message ?? "Invalid request" });
     return;
   }
   console.log("fetching page", data.page);
@@ -107,7 +107,7 @@ async function searchLocalGames(data: z.infer<typeof searchGameSchema>, page: nu
         );
       } catch (e) {
         
-        return [null, new Error("Error al procesar las plataformas")];
+        return [null, new Error("Error processing the platforms.")];
       }
 
       query["platforms.platform.id"] = { $in: platforms };
