@@ -14,11 +14,15 @@ export const gameDetails = z.object({
   name: z.string(),
   slug: z.string(),
   tba: z.boolean(),
-  metacritic: z.number(),
-  released: z.string(),
+  metacritic: z.number().nullable(),
+  playtime: z.number().nullable(),
+  released: z.string().catch("Not released"),
   description_raw: z.string(),
-  background_image: z.string(),
-  playtime: z.number(),
+  background_image: z
+    .string()
+    .catch(
+      "https://image.api.playstation.com/vulcan/ap/rnd/202410/2918/95953c3726f54fba5e6cf53f97b10bcf99e0d43581ae2c55.jpg?w=440"
+    ),
   rating: z.number(),
   esrb_rating: esrbRating,
   platforms: z.array(platformDetails),

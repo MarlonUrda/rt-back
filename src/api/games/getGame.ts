@@ -3,6 +3,7 @@ import {
   gameDetails,
   gameScreenshots,
 } from "../../types/api/games/gameDetails";
+import { z } from "zod";
 import { RAWGPaths } from "../../helpers/RawgPaths";
 import { fetchRawg } from "../../helpers/fetchExternal";
 import Game from "../../database/models/game";
@@ -34,7 +35,8 @@ export const getGameDetails = async (_req: Request, res: Response) => {
     path: RAWGPaths.gameDetails(Number(id)),
     method: "GET",
     responseSchema: gameDetails,
-  });
+  }) as [z.infer<typeof gameDetails>, Error]
+  ;
 
   if (!response) {
     res.status(500).json({ error: "Error al obtener detalles del juego" });
@@ -44,6 +46,7 @@ export const getGameDetails = async (_req: Request, res: Response) => {
   const newGame = new Game({
     external_id: response.id,
     ...response,
+    release_date: response.released ? new Date(response.released) : null,
   });
   res.status(200).json(newGame.toJSON());
 

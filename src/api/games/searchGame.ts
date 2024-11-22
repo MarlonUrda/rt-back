@@ -60,7 +60,7 @@ export const searchGames = async (req: Request, res: Response) => {
     fullGames = localGames;
   }
   
-  const [rawgGames, rawgError] = await searchRawgGames(data, data.external_page ?? 1);
+  const [rawgGames, rawgError] = await searchRawgGames(data, data.external_page || 1);
 
   if (rawgError || !rawgGames) {
     res.status(400).json({ error: JSON.stringify(rawgError?.message ?? "Query invalida") });
@@ -72,7 +72,7 @@ export const searchGames = async (req: Request, res: Response) => {
   response = {
     count: fullGames.length,
     results: fullGames,
-    next: {...data, external_page: (data.external_page ?? 1) + 1},
+    next: {...data, external_page: (data.external_page || 1) + 1},
   };
 
   if (response.next && response.next.page) {
@@ -117,6 +117,10 @@ async function searchLocalGames(data: z.infer<typeof searchGameSchema>, page: nu
       query["$text"] = { $search: data.query };
     }
 
+    if (data.year) {
+      query["release_date"] = { $eq: new Date(data.year.toString()) };
+    }
+
   return [await Game.find(query)
     .sort({ added: -1 })
     .skip((page - 1) * PAGE_SIZE)
@@ -139,10 +143,14 @@ async function searchRawgGames(data: z.infer<typeof searchGameSchema>, page: num
     rawgQuery["platforms"] = data.platforms;
   }
 
-  const [rawgGames, rawgError] = await fetchRawg({
+  const [rawgGames, rawgError] = await fetchRawg<
+    z.infer<typeof searchGameSchema>,
+    z.infer<typeof standardRawgGameResponse>
+  >({
     path: `games`,
     params: rawgQuery,
     method: "GET",
+    // @ts-ignore
     responseSchema: standardRawgGameResponse,
   });
 

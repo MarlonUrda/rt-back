@@ -13,8 +13,9 @@ export interface IGame extends mongoose.Document {
   name: string;
   slug: string;
   released: string;
+  release_date: Date | null;
   tba: boolean;
-  metacritic: number;
+  metacritic: number | null;
   description_raw: string;
   background_image: string;
   playtime: number;
@@ -44,8 +45,9 @@ const gameSchema = new mongoose.Schema(
     name: { type: String, required: true },
     slug: { type: String, required: true },
     released: { type: String, required: true },
+    release_date: { type: Date, required: false },
     tba: { type: Boolean, required: true },
-    metacritic: { type: Number, required: true },
+    metacritic: { type: Number, required: false },
     description_raw: { type: String, required: true },
     background_image: { type: String, required: true },
     playtime: { type: Number, required: true },

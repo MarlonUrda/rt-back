@@ -1,15 +1,18 @@
 import z from "zod";
 import { esrbRating, platformDetails, parentPlatform } from "./generics";
 
-
 export const gamePreview = z.object({
   _id: z.string(),
   external_id: z.number(),
   slug: z.string(),
   name: z.string(),
-  released: z.string(),
+  released: z.string().catch("Not released"),
   tba: z.boolean(),
-  background_image: z.string(),
+  background_image: z
+    .string()
+    .catch(
+      "https://image.api.playstation.com/vulcan/ap/rnd/202410/2918/95953c3726f54fba5e6cf53f97b10bcf99e0d43581ae2c55.jpg?w=440"
+    ),
   metacritic: z.number().nullable(),
   playtime: z.number().nullable(),
   esrb_rating: esrbRating,
@@ -25,15 +28,18 @@ export const rawgGamePreview = z.object({
   id: z.number(),
   slug: z.string(),
   name: z.string(),
-  released: z.string(),
+  released: z.string().catch("Not released"),
   tba: z.boolean(),
-  background_image: z.string(),
+  background_image: z
+    .string()
+    .catch(
+      "https://image.api.playstation.com/vulcan/ap/rnd/202410/2918/95953c3726f54fba5e6cf53f97b10bcf99e0d43581ae2c55.jpg?w=440"
+    ),
   metacritic: z.number().nullable(),
   playtime: z.number().nullable(),
   esrb_rating: esrbRating,
   platforms: z.array(platformDetails),
   parent_platforms: z.array(parentPlatform),
-  
 });
 
 export const gamePreviewProjection = {
@@ -54,6 +60,4 @@ export const gamePreviewProjection = {
   mt_rating_user_count: 1,
   mt_rating_critic: 1,
   mt_rating_critic_count: 1,
-
-}
-
+};
