@@ -14,8 +14,6 @@ export const getPlaylist = async (_req: Request, res: Response) => {
       res.status(404).json({ error: "No se ha encontrado la playlist del usuario" });
       return;
     }
-
-    console.log(playlist.toJSON())
     
     res.status(200).json(playlist);
 
@@ -41,6 +39,15 @@ export const addGameToPlaylist = async (req: Request, res: Response) => {
   }
 
   try {
+
+    const game = await Playlist.findGame(user.user.id, data.gameId)
+
+    if (game) {
+      console.log("nop")
+      res.status(400).json({ error: "El juego ya se encuentra en la playlist" });
+      return;
+    }
+
     const add = await Playlist.addGame(user.user.id, data.gameId)
 
     if (!add) {
