@@ -72,7 +72,7 @@ export const searchGames = async (req: Request, res: Response) => {
   response = {
     count: fullGames.length,
     results: fullGames,
-    next: {...data, external_page: (data.external_page || 1) + 1},
+    next: fullGames.length > 0 ? {...data, external_page: (data.external_page || 1) + 1} : undefined,
   };
 
   if (response.next && response.next.page) {
@@ -118,7 +118,10 @@ async function searchLocalGames(data: z.infer<typeof searchGameSchema>, page: nu
     }
 
     if (data.year) {
-      query["release_date"] = { $eq: new Date(data.year.toString()) };
+      query["release_date"] = { 
+        $gte: new Date(`${data.year}-01-01T00:00:00.000Z`),
+        $lte: new Date(`${data.year}-12-31T23:59:59.999Z`),
+       };
     }
 
   return [await Game.find(query)
@@ -141,6 +144,10 @@ async function searchRawgGames(data: z.infer<typeof searchGameSchema>, page: num
 
   if (data.platforms) {
     rawgQuery["platforms"] = data.platforms;
+  }
+
+  if (data.year) {
+    rawgQuery["dates"] = `${data.year}-01-01,${data.year}-12-31`;
   }
 
   const [rawgGames, rawgError] = await fetchRawg<

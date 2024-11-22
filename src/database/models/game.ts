@@ -21,8 +21,8 @@ export interface IGame extends mongoose.Document {
   playtime: number;
   rating: number;
   esrb_rating: z.infer<typeof esrbRating>;
-  platforms: Array<z.infer<typeof platformDetails>>;
-  parent_platforms: Array<z.infer<typeof parentPlatform>>;
+  platforms: Array<z.infer<typeof platformDetails>> | null;
+  parent_platforms: Array<z.infer<typeof parentPlatform>> | null;
   genres: Array<z.infer<typeof genres>>;
   score: number;
   reviews_count: number;
@@ -71,7 +71,8 @@ const gameSchema = new mongoose.Schema(
           released_at: { type: String, required: false },
         },
       ],
-      required: true,
+      required: false,
+      default: null,
     },
     parent_platforms: {
       type: [
@@ -83,7 +84,9 @@ const gameSchema = new mongoose.Schema(
           },
         },
       ],
-      required: true,
+      required: false,
+      default: null,
+
     },
     genres: {
       type: [
