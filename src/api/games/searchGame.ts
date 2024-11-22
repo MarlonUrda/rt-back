@@ -23,6 +23,8 @@ import {
 const PAGE_SIZE = 20;
 const MIN_YEAR = 1975;
 const MAX_YEAR = new Date().getFullYear();
+const MIN_RATING = 0; 
+const MAX_RATING = 5;
 
 export const searchGames = async (req: Request, res: Response) => {
   const { success, data, error } = searchGameSchema.safeParse(req.query);
@@ -53,7 +55,7 @@ export const searchGames = async (req: Request, res: Response) => {
       response = {
         count: localGames.length,
         results: localGames,
-        next: {...data, page: data.page ?? 1 + 1},
+        next: {...data, page: (data.page ?? 1) + 1},
       };
       res.status(200).json(response);
       return;
@@ -152,6 +154,17 @@ async function searchLocalGames(data: z.infer<typeof searchGameSchema>, page: nu
       };
     }
 
+    if (data.minRating || data.maxRating) {
+      query["mt_rating_user"] = {
+        $gte: data.minRating
+          ? data.minRating
+          : MIN_RATING,
+        $lte: data.maxRating
+          ? data.maxRating
+          : MAX_RATING,
+      };
+    }
+
   return [await Game.find(query)
     .sort({ added: -1 })
     .skip((page - 1) * PAGE_SIZE)
@@ -165,6 +178,12 @@ async function searchRawgGames(data: z.infer<typeof searchGameSchema>, page: num
   const rawgQuery: Record<string, string> = {
     page: page.toString(),
   };
+
+  // since external games are not yet rated, if minrating is greater than 0, we will not search for external games
+
+  if (data.minRating && data.minRating > 0) {
+    return [[], null, false];
+  }
 
   if (data.query) {
     rawgQuery["search"] = data.query;
