@@ -21,6 +21,8 @@ import {
 
 
 const PAGE_SIZE = 20;
+const MIN_YEAR = 1975;
+const MAX_YEAR = new Date().getFullYear();
 
 export const searchGames = async (req: Request, res: Response) => {
   const { success, data, error } = searchGameSchema.safeParse(req.query);
@@ -60,7 +62,7 @@ export const searchGames = async (req: Request, res: Response) => {
     fullGames = localGames;
   }
   
-  const [rawgGames, rawgError] = await searchRawgGames(data, data.external_page || 1);
+  const [rawgGames, rawgError, hasMore] = await searchRawgGames(data, data.external_page || 1);
 
   if (rawgError || !rawgGames) {
     res.status(400).json({ error: JSON.stringify(rawgError?.message ?? "Query invalida") });
@@ -72,7 +74,7 @@ export const searchGames = async (req: Request, res: Response) => {
   response = {
     count: fullGames.length,
     results: fullGames,
-    next: fullGames.length > 0 ? {...data, external_page: (data.external_page || 1) + 1} : undefined,
+    next: hasMore ? {...data, external_page: (data.external_page || 1) + 1} : undefined,
   };
 
   if (response.next && response.next.page) {
@@ -113,6 +115,18 @@ async function searchLocalGames(data: z.infer<typeof searchGameSchema>, page: nu
       query["platforms.platform.id"] = { $in: platforms };
     }
 
+    if (data.genres) {
+      let genres: number[] = [];
+      try {
+        genres = processCommaSeparatedParameters(data.genres, parseNumber);
+      } catch (e) {
+        
+        return [null, new Error("Error processing the genres.")];
+      }
+
+      query["genres.id"] = { $in: genres };
+    }
+
     if (data.query) {
       query["$text"] = { $search: data.query };
     }
@@ -124,6 +138,20 @@ async function searchLocalGames(data: z.infer<typeof searchGameSchema>, page: nu
        };
     }
 
+    if (data.minYear || data.maxYear) {
+      query["release_date"] = {
+        $gte: new Date(`${data.minYear
+          ? data.minYear
+          : MIN_YEAR
+        }-01-01T00:00:00.000Z`),
+        $lte: new Date(`${data.maxYear
+          ? data.maxYear
+          : MAX_YEAR
+
+        }-12-31T23:59:59.999Z`),
+      };
+    }
+
   return [await Game.find(query)
     .sort({ added: -1 })
     .skip((page - 1) * PAGE_SIZE)
@@ -132,7 +160,7 @@ async function searchLocalGames(data: z.infer<typeof searchGameSchema>, page: nu
 }
 
 async function searchRawgGames(data: z.infer<typeof searchGameSchema>, page: number)
-: Promise<[z.infer<typeof gamePreview>[] | null, Error | null]>
+: Promise<[z.infer<typeof gamePreview>[] | null, Error | null, boolean]>
 {
   const rawgQuery: Record<string, string> = {
     page: page.toString(),
@@ -146,8 +174,20 @@ async function searchRawgGames(data: z.infer<typeof searchGameSchema>, page: num
     rawgQuery["platforms"] = data.platforms;
   }
 
+  if (data.genres) {
+    rawgQuery["genres"] = data.genres;
+  }
+
   if (data.year) {
     rawgQuery["dates"] = `${data.year}-01-01,${data.year}-12-31`;
+  }
+
+  if (data.maxYear && data.minYear) {
+    rawgQuery["dates"] = `${data.minYear
+    ? data.minYear : MIN_YEAR
+    }-01-01,${data.maxYear
+    ? data.maxYear : MAX_YEAR
+    }-12-31`;
   }
 
   const [rawgGames, rawgError] = await fetchRawg<
@@ -162,12 +202,14 @@ async function searchRawgGames(data: z.infer<typeof searchGameSchema>, page: num
   });
 
   if (rawgError || !rawgGames) {
-    return [null, rawgError];
+    return [null, rawgError, false];
   }
 
   const convertedGames =
     rawgGames?.results.map(convertRawgGameToGamePreview) ?? [];
   
-  return [convertedGames, null];
+  const hasMore = rawgGames.next !== null;
+  
+  return [convertedGames, null, hasMore];
 }
 

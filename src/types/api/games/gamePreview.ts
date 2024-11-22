@@ -10,9 +10,7 @@ export const gamePreview = z.object({
   tba: z.boolean(),
   background_image: z
     .string()
-    .catch(
-      "https://image.api.playstation.com/vulcan/ap/rnd/202410/2918/95953c3726f54fba5e6cf53f97b10bcf99e0d43581ae2c55.jpg?w=440"
-    ),
+    .catch("https://art.pixilart.com/sr2508e39df1caws3.png"),
   metacritic: z.number().nullable(),
   playtime: z.number().nullable(),
   esrb_rating: esrbRating,
@@ -32,9 +30,7 @@ export const rawgGamePreview = z.object({
   tba: z.boolean(),
   background_image: z
     .string()
-    .catch(
-      "https://image.api.playstation.com/vulcan/ap/rnd/202410/2918/95953c3726f54fba5e6cf53f97b10bcf99e0d43581ae2c55.jpg?w=440"
-    ),
+    .catch("https://art.pixilart.com/sr2508e39df1caws3.png"),
   metacritic: z.number().nullable(),
   playtime: z.number().nullable(),
   esrb_rating: esrbRating,
