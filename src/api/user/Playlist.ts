@@ -10,9 +10,7 @@ import { getSearchField } from "../../helpers/getSearchPath";
 import { z } from "zod";
 
 export const getPlaylist = async (_req: Request, res: Response) => {
-  console.log("GET PLAY")
   const { id } = _req.params;
-  console.log(id)
 
   try {
     const playlist = await Playlist.findPlaylistByUserId(id)
@@ -78,6 +76,10 @@ export const addGameToPlaylist = async (req: Request, res: Response) => {
 
       data.gameId = newGame._id as string;
       console.log(data.gameId)
+    }
+
+    if(game){
+      data.gameId = game?._id as string;
     }
 
     const gameInPlaylist = await Playlist.findGame(user.user.id, data.gameId)
