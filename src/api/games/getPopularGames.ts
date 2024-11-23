@@ -7,7 +7,7 @@ import { gamePreviewProjection, gamePreview } from "../../types/api/games/gamePr
 import { z } from "zod";
 
 export const getPopularGames = async (_req: Request, res: Response) => {
-  const games = await Game.find().sort({ added: -1 }).limit(20).select(gamePreviewProjection) as z.infer<typeof gamePreview>[];
+  const games = await Game.find().sort({ added: -1 }).limit(10).select(gamePreviewProjection) as z.infer<typeof gamePreview>[];
 
   console.log(
     // json stringify the games
@@ -21,3 +21,33 @@ export const getPopularGames = async (_req: Request, res: Response) => {
 
   res.status(200).json(response);
 };
+
+export const getNewGames = async (_req: Request, res: Response) => {
+  const games = await Game.find().sort({ release_date: -1 }).limit(10).select(gamePreviewProjection) as z.infer<typeof gamePreview>[];
+
+  console.log(
+    JSON.stringify(games, null, 2)
+  );
+
+  const response: z.infer<typeof standardGameResponse> = {
+    count: games.length,
+    results: games,
+  };
+
+  res.status(200).json(response);
+}
+
+export const getHighestRatedGames = async (_req: Request, res: Response) => {
+  const games = await Game.find().sort({ mt_rating_user: -1 }).limit(10).select(gamePreviewProjection) as z.infer<typeof gamePreview>[];
+
+  console.log(
+    JSON.stringify(games, null, 2)
+  );
+
+  const response: z.infer<typeof standardGameResponse> = {
+    count: games.length,
+    results: games,
+  };
+
+  res.status(200).json(response);
+}

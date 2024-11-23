@@ -48,7 +48,7 @@ const gameSchema = new mongoose.Schema(
     release_date: { type: Date, required: false },
     tba: { type: Boolean, required: true },
     metacritic: { type: Number, required: false },
-    description_raw: { type: String, required: true },
+    description_raw: { type: String, required: false, default: "No description avialable" },
     background_image: { type: String, required: true },
     playtime: { type: Number, required: true },
     rating: { type: Number, required: true },

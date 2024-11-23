@@ -37,6 +37,20 @@ export const searchGameSchema = z.object({
     .min(0)
     .max(5)
     .optional(),
+  minCriticsRating: z
+    .number({
+      coerce: true,
+    })
+    .min(0)
+    .max(5)
+    .optional(),
+  maxCriticsRating: z
+    .number({
+      coerce: true,
+    })
+    .min(0)
+    .max(5)
+    .optional(),
 });
 
 export const standardGameResponse = z.object({

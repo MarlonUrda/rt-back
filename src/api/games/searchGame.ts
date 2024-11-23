@@ -130,7 +130,7 @@ async function searchLocalGames(data: z.infer<typeof searchGameSchema>, page: nu
     }
 
     if (data.query) {
-      query["$text"] = { $search: data.query };
+      query["$text"] = { $search: `"${data.query}"` };
     }
 
     if (data.year) {
@@ -165,6 +165,17 @@ async function searchLocalGames(data: z.infer<typeof searchGameSchema>, page: nu
       };
     }
 
+    if (data.minCriticsRating || data.maxCriticsRating) {
+      query["mt_rating_critic"] = {
+        $gte: data.minCriticsRating
+          ? data.minCriticsRating
+          : MIN_RATING,
+        $lte: data.maxCriticsRating
+          ? data.maxCriticsRating
+          : MAX_RATING,
+      };
+    }
+
   return [await Game.find(query)
     .sort({ added: -1 })
     .skip((page - 1) * PAGE_SIZE)
@@ -182,6 +193,10 @@ async function searchRawgGames(data: z.infer<typeof searchGameSchema>, page: num
   // since external games are not yet rated, if minrating is greater than 0, we will not search for external games
 
   if (data.minRating && data.minRating > 0) {
+    return [[], null, false];
+  }
+
+  if (data.minCriticsRating && data.minCriticsRating > 0) {
     return [[], null, false];
   }
 

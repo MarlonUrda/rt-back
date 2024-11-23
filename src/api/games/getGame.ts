@@ -43,10 +43,13 @@ export const getGameDetails = async (_req: Request, res: Response) => {
     return;
   }
 
+  console.log("game.released", response.released);
+
+
   const newGame = new Game({
     external_id: response.id,
     ...response,
-    release_date: response.released ? new Date(response.released) : null,
+    release_date: response.released !== "Not released" ? new Date(response.released) : null,
   });
   res.status(200).json(newGame.toJSON());
 

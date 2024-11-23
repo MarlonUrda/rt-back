@@ -3,6 +3,7 @@ import User from "../../database/models/user";
 import { loginRequestSchema, LoginResponse } from "../../types/api/login";
 import { registerSchema, checkEmailSchema } from "../../types/api/register";
 import { hashPassword, generateToken, comparePassword } from "../../helpers/auth";
+import Playlist from "../../database/models/playlist";
 
 
 export async function login(req: Request, res: Response) {
@@ -86,8 +87,19 @@ export async function register(req: Request, res: Response) {
     lastName: data.lastName,
   });
 
+  
   await newUser.save();
-
+  
+  const newPlaylist = new Playlist({
+    userId: newUser.id,
+    gameIds: [],
+    user: {
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      _id: newUser.id,
+    }
+  });
+  await newPlaylist.save();
   const jwtUser = {
     email: newUser.email,
     id: newUser.id,

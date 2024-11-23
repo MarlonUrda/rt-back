@@ -2,6 +2,7 @@ import e from "express";
 import AuthGroup from "./auth/Group";
 import SGamesGroup from "./games/Group";
 import UserGroup from "./user/Group";
+import PublicGamesGroup from "./games/PublicGroup";
 
 export class Server {
   private app: e.Application;
@@ -30,6 +31,9 @@ export class Server {
 
     const gamesGroup = new SGamesGroup();
     this.app.use(gamesGroup.path, gamesGroup.getRouter());
+
+    const publicGamesGroup = new PublicGamesGroup();
+    this.app.use(publicGamesGroup.path, publicGamesGroup.getRouter());
 
     this.app.get("/", (_, res) => {
       res.send("Hello World");
