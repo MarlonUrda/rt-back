@@ -9,10 +9,6 @@ import { z } from "zod";
 export const getPopularGames = async (_req: Request, res: Response) => {
   const games = await Game.find().sort({ added: -1 }).limit(10).select(gamePreviewProjection) as z.infer<typeof gamePreview>[];
 
-  console.log(
-    // json stringify the games
-    JSON.stringify(games, null, 2)
-  );
 
   const response: z.infer<typeof standardGameResponse> = {
     count: games.length,
@@ -25,9 +21,6 @@ export const getPopularGames = async (_req: Request, res: Response) => {
 export const getNewGames = async (_req: Request, res: Response) => {
   const games = await Game.find().sort({ release_date: -1 }).limit(10).select(gamePreviewProjection) as z.infer<typeof gamePreview>[];
 
-  console.log(
-    JSON.stringify(games, null, 2)
-  );
 
   const response: z.infer<typeof standardGameResponse> = {
     count: games.length,
@@ -39,10 +32,6 @@ export const getNewGames = async (_req: Request, res: Response) => {
 
 export const getHighestRatedGames = async (_req: Request, res: Response) => {
   const games = await Game.find().sort({ mt_rating_user: -1 }).limit(10).select(gamePreviewProjection) as z.infer<typeof gamePreview>[];
-
-  console.log(
-    JSON.stringify(games, null, 2)
-  );
 
   const response: z.infer<typeof standardGameResponse> = {
     count: games.length,

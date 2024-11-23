@@ -1,5 +1,4 @@
 export function parseNumber(value: string): number {
-  console.log("Parsing number", value);
   const parsed = Number(value);
 
   if (isNaN(parsed)) {

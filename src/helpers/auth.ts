@@ -18,5 +18,3 @@ export const generateToken = (user: jwtUser) => {
   }
   return jwt.sign({ user }, secret, { expiresIn: "24h" });
 };
-
-console.log("salt", bcrypt.genSaltSync(10));

@@ -94,7 +94,6 @@ export const getGameReviews = async (_req: Request, res: Response) => {
   }
 
   const comments = await Review.findReviewsByGameId(id);
-  console.log(comments, "comments");
 
   res.status(200).json(comments || []);
 };
