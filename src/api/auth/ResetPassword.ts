@@ -32,11 +32,11 @@ export const SendResetEmail = async (req: Request, res: Response) => {
 
   try {
     const { data, error } = await r.emails.send({
-      from: "no-reply@notebit.cervant.chat",
+      from: "no-reply@rminds.cervant.chat",
       to: email,
       subject: "Testing",
-      html: emailTemplate(user.firstName, code)
-    })
+      html: emailTemplate(user.firstName, code),
+    });
 
     if (error) {
       console.error(error)
