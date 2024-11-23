@@ -34,7 +34,7 @@ export const SendResetEmail = async (req: Request, res: Response) => {
     const { data, error } = await r.emails.send({
       from: "no-reply@rminds.cervant.chat",
       to: email,
-      subject: "Testing",
+      subject: "Reset your password",
       html: emailTemplate(user.firstName, code),
     });
 
