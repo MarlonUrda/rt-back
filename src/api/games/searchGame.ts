@@ -33,7 +33,6 @@ export const searchGames = async (req: Request, res: Response) => {
     res.status(400).json({ error: error.message ?? "Invalid request" });
     return;
   }
-  console.log("fetching page", data.page);
 
   let response: z.infer<typeof standardGameResponse> = {
     count: 0,

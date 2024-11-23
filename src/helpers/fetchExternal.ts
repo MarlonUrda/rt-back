@@ -73,7 +73,6 @@ export const fetchRawg = async <Req, Res>(
     });
 
     const data = await response.json();
-    console.log(data);
     if (!response.ok) {
       console.error(data);
       return [null, new Error(data)];
