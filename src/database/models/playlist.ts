@@ -14,6 +14,7 @@ interface PlaylistModel extends mongoose.Model<IPlaylist> {
   findGame(userId: string, gameId: string): Promise<IPlaylist | null>;
   addGame(userId: string, gameId: string): Promise<IPlaylist | null>;
   findPlaylistByUserId(userId: string): Promise<IPlaylist | null>;
+  simpleFindPlaylistByUserId(userId: string): Promise<IPlaylist | null>;
   removeGame(userId: string, gameId: string): Promise<IPlaylist | null>;
   toJSON(): IPlaylist;
 }
@@ -39,6 +40,9 @@ const playlistSchema = new mongoose.Schema({
   }, statics: {
     findPlaylistByUserId(userId: string): Promise<IPlaylist | null> {
       return this.findOne({ userId }).populate("gameIds");
+    },
+    simpleFindPlaylistByUserId(userId: string): Promise<IPlaylist | null> {
+      return this.findOne({ userId });
     },
     async findGame(userId: string, gameId: string): Promise<IPlaylist | null> {
       const playlist = await this.findOne({ userId: new mongoose.Types.ObjectId(userId) });

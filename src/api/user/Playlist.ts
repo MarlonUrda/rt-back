@@ -27,6 +27,27 @@ export const getPlaylist = async (_req: Request, res: Response) => {
   }
 }
 
+export const getSimplePlaylist = async (req: Request, res: Response) => {
+  // only returns the game ids
+  const user = res.locals.user as JwtPayloadWithUser;
+
+  try {
+    const playlist = await Playlist.simpleFindPlaylistByUserId(
+      user.user.id
+    )
+    if (!playlist) {
+      res.status(404).json({ error: "User playlist not found." });
+      return;
+    }
+
+    res.status(200).json(playlist);
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+}
+
 export const addGameToPlaylist = async (req: Request, res: Response) => {
   let newId: string;
   const { success, data, error } = addGameRequestSchema.safeParse(req.body);
