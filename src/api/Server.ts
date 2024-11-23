@@ -39,7 +39,7 @@ export class Server {
       res.send("Hello World");
     });
 
-    this.app.listen(this.port, this.address ?? Server.DEFAULT_ADDRESS, () => {
+    this.app.listen(this.port, () => {
       console.log(
         `Server listening on ${this.address || Server.DEFAULT_ADDRESS}:${
           this.port
