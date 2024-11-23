@@ -139,12 +139,18 @@ export const updateReview = async (req: Request, res: Response) => {
   if (data.rating) updateData.rating = data.rating;
 
   try {
-    const update = await Review.findByIdAndUpdate(data._id, updateData, {
-      new: true,
-    });
+    const oldReview = await Review.findById(data._id);
+
+    const oldRating = oldReview?.rating || 0;
+
+    const update = await Review.findByIdAndUpdate(data._id, {
+      ...updateData,
+      updatedAt: Date.now(),
+    }, { new: true }
+    )
 
     if (!update) {
-      res.status(404).json({ error: "Review not founded" });
+      res.status(404).json({ error: "Review not found" });
       return;
     }
 
@@ -163,8 +169,7 @@ export const updateReview = async (req: Request, res: Response) => {
 
     if (user.user.role === "user") {
       const newRating =
-        (userRating * userRatingCount - update.rating + data.rating) /
-        userRatingCount;
+        (userRating * userRatingCount - oldRating + update.rating) / userRatingCount;
 
       await game.updateOne({
         mt_rating_user: newRating,
@@ -172,9 +177,7 @@ export const updateReview = async (req: Request, res: Response) => {
       return;
     }
 
-    const newRating =
-      (criticRating * criticRatingCount - update.rating + data.rating) /
-      criticRatingCount;
+    const newRating = (criticRating * criticRatingCount - oldRating + update.rating) / criticRatingCount;
 
     await game.updateOne({
       mt_rating_critic: newRating,
@@ -229,7 +232,7 @@ export const deleteReview = async (req: Request, res: Response) => {
     const criticRatingCount = game.mt_rating_critic_count || 0;
 
     if (toDelete.reviewType === "user") {
-      const newRating = (userRating * userRatingCount - toDelete.rating) / userRatingCount;
+      const newRating = userRatingCount === 1 ? 0 : (userRating * userRatingCount - toDelete.rating) / userRatingCount;
 
       await game.updateOne({
         mt_rating_user: newRating,
@@ -238,7 +241,7 @@ export const deleteReview = async (req: Request, res: Response) => {
       return;
     }
 
-    const newRating = (criticRating * criticRatingCount - toDelete.rating) / criticRatingCount;
+    const newRating = criticRatingCount === 1 ? 0 : (criticRating * criticRatingCount - toDelete.rating) / criticRatingCount;
 
     await game.updateOne({
       mt_rating_critic: newRating,
